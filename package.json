@@ -1,0 +1,23 @@
+{
+  "name": "node-red-contrib-roadrunner",
+  "version": "0.0.1",
+  "description": "Node-RED nodes to control Acmesystem's Roadrunner GPIO",
+  "keywords": [
+    "gpio",
+    "roadrunner",
+    "acmesystems"
+  ],
+  "author": {
+    "name": "Antonio Galea",
+    "email": "antonio.galea@gmail.com"
+  },
+  "license": "GPL-3.0-or-later",
+  "dependencies": {
+    "linux-gpio": "0.0.4"
+  },
+  "node-red": {
+    "nodes": {
+      "roadrunner": "roadrunner.js"
+    }
+  }
+}
