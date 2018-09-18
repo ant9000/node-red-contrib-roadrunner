@@ -1,22 +1,28 @@
 module.exports = function(RED) {
-    function GPIOInNode(n) {
-        RED.nodes.createNode(this,n);
+    RED.log.info("rr-gpio : initializing.");
+
+    function GPIOInNode(config) {
+        RED.nodes.createNode(this,config);
+        this.pin = config.pin; 
         var node = this;
         node.on('input', function(msg) {
-            msg.payload = 'TODO: rr-gpio in';
+            msg.payload = 'TODO: rr-gpio in ' + node.pin;
             node.send(msg);
         });
     }
     RED.nodes.registerType("rr-gpio in",GPIOInNode);
 
-    function GPIOOutNode(n) {
-        RED.nodes.createNode(this,n);
+    function GPIOOutNode(config) {
+        RED.nodes.createNode(this,config);
+        this.pin = config.pin;
         var node = this;
         node.on('input', function(msg) {
-            msg.payload = 'TODO: rr-gpio out';
+            msg.payload = 'TODO: rr-gpio out ' + node.pin;
             node.send(msg);
         });
     }
     RED.nodes.registerType("rr-gpio out",GPIOOutNode);
+
+    RED.log.info("rr-gpio : initialization complete.");
 }
 

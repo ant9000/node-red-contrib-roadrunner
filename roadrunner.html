@@ -1,5 +1,9 @@
 <script type="text/x-red" data-template-name="rr-gpio in">
     <div class="form-row">
+        <label for="node-input-pin"><i class="fa fa-circle"></i> Pin</label>
+        <input type="text" id="node-input-pin">
+    </div>
+    <div class="form-row">
         <label for="node-input-name"><i class="icon-tag"></i> Name</label>
         <input type="text" id="node-input-name" placeholder="Name">
     </div>
@@ -20,18 +24,23 @@
         category: 'RoadRunner',
         color: '#a6bbcf',
         defaults: {
-            name: {value:""}
+            name: {value:""},
+            pin: { value:"1",required:true,validate:RED.validators.number() },
         },
         inputs:0,
         outputs:1,
         icon: "roadrunner.png",
         label: function() {
-            return this.name||"rr-gpio in";
+            return this.name||"rr-gpio in "+this.pin;
         }
     });
 </script>
 
 <script type="text/x-red" data-template-name="rr-gpio out">
+    <div class="form-row">
+        <label for="node-input-pin"><i class="fa fa-circle"></i> Pin</label>
+        <input type="text" id="node-input-pin">
+    </div>
     <div class="form-row">
         <label for="node-input-name"><i class="icon-tag"></i> Name</label>
         <input type="text" id="node-input-name" placeholder="Name">
@@ -51,14 +60,15 @@
         category: 'RoadRunner',
         color: '#a6bbcf',
         defaults: {
-            name: {value:""}
+            name: {value:""},
+            pin: { value:"1",required:true,validate:RED.validators.number() },
         },
         inputs:1,
         outputs:0,
         icon: "roadrunner.png",
         align: "right",
         label: function() {
-            return this.name||"rr-gpio out";
+            return this.name||"rr-gpio out "+this.pin;
         }
     });
 </script>

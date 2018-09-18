@@ -12,9 +12,7 @@
     "email": "antonio.galea@gmail.com"
   },
   "license": "GPL-3.0-or-later",
-  "dependencies": {
-    "linux-gpio": "0.0.4"
-  },
+  "dependencies": {},
   "node-red": {
     "nodes": {
       "roadrunner": "roadrunner.js"
