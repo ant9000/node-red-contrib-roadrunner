@@ -25,7 +25,7 @@
         color: '#a6bbcf',
         defaults: {
             name: {value:""},
-            pin: { value:"1",required:true,validate:RED.validators.number() },
+            pin: { value:"1", required:true, validate:RED.validators.number() }
         },
         inputs:0,
         outputs:1,
@@ -40,6 +40,13 @@
     <div class="form-row">
         <label for="node-input-pin"><i class="fa fa-circle"></i> Pin</label>
         <input type="text" id="node-input-pin">
+    </div>
+    <div class="form-row">
+        <label for="node-input-level">Initial level</label>
+        <select id="node-input-level" style="width: 250px;">
+            <option>0</option>
+            <option>1</option>
+        </select>
     </div>
     <div class="form-row">
         <label for="node-input-name"><i class="icon-tag"></i> Name</label>
@@ -61,7 +68,8 @@
         color: '#a6bbcf',
         defaults: {
             name: {value:""},
-            pin: { value:"1",required:true,validate:RED.validators.number() },
+            pin: { value:"1", required:true, validate:RED.validators.number() },
+            level: { value:"keep" }
         },
         inputs:1,
         outputs:0,

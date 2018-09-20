@@ -7,6 +7,8 @@ module.exports = function(RED) {
     var gpioHelper = __dirname+'/gpiod_helper.py';
     process.env.PYTHONUNBUFFERED = 1;
 
+    var initOK = true;
+
     var pinsInUse = {};
 
     function GPIOInNode(config) {
@@ -14,18 +16,16 @@ module.exports = function(RED) {
         this.buttonState = -1;
         this.pin = config.pin; 
         var node = this;
-        node.on('input', function(msg) {
-            msg.payload = 'TODO: rr-gpio in ' + node.pin;
-            node.send(msg);
-        });
+
+        if (!initOK) {
+            node.status({fill:"grey",shape:"dot",text:"node-red:rr-gpio.status.not-available"});
+            return;
+        }
 
         if (!pinsInUse.hasOwnProperty(this.pin)) {
             pinsInUse[this.pin] = 'in';
-        }
-        else {
-            if (pinsInUse[this.pin] !== 'in') {
-                node.warn(RED._("rr-gpio.errors.alreadyset",{pin:this.pin,type:pinsInUse[this.pin]}));
-            }
+        } else if (pinsInUse[this.pin] !== 'in') {
+            node.warn(RED._("rr-gpio.errors.alreadyset",{pin:this.pin,type:pinsInUse[this.pin]}));
         }
 
         if (node.pin !== undefined) {
@@ -57,14 +57,19 @@ module.exports = function(RED) {
                 if (node.done) {
                     node.status({fill:"grey",shape:"ring",text:"rr-gpio.status.closed"});
                     node.done();
+                } else {
+                    node.status({fill:"red",shape:"ring",text:"rr-gpio.status.stopped"});
                 }
-                else { node.status({fill:"red",shape:"ring",text:"rr-gpio.status.stopped"}); }
             });
 
             node.child.on('error', function (err) {
-                if (err.errno === "ENOENT") { node.error(RED._("rr-gpio.errors.commandnotfound")); }
-                else if (err.errno === "EACCES") { node.error(RED._("rr-gpio.errors.commandnotexecutable")); }
-                else { node.error(RED._("rr-gpio.errors.error",{error:err.errno})) }
+                if (err.errno === "ENOENT") {
+                    node.error(RED._("rr-gpio.errors.commandnotfound"));
+                } else if (err.errno === "EACCES") {
+                    node.error(RED._("rr-gpio.errors.commandnotexecutable"));
+                } else {
+                    node.error(RED._("rr-gpio.errors.error",{error:err.errno}))
+                }
             });
 
         } else {
@@ -78,8 +83,7 @@ module.exports = function(RED) {
                 node.done = done;
                 node.child.stdin.write("q\n");
                 node.child.kill('SIGKILL');
-            }
-            else { done(); }
+            } else { done(); }
         });
 
     }
@@ -88,11 +92,90 @@ module.exports = function(RED) {
     function GPIOOutNode(config) {
         RED.nodes.createNode(this,config);
         this.pin = config.pin;
+        this.level = config.level ? 1 : 0;
         var node = this;
-        node.on('input', function(msg) {
-            msg.payload = 'TODO: rr-gpio out ' + node.pin;
-            node.send(msg);
+
+        if (!initOK) {
+            node.status({fill:"grey",shape:"dot",text:"node-red:rr-gpio.status.not-available"});
+            return;
+        }
+
+        if (!pinsInUse.hasOwnProperty(this.pin)) {
+            pinsInUse[this.pin] = 'out';
+        } else if (pinsInUse[this.pin] !== 'out') {
+            node.warn(RED._("rr-gpio.errors.alreadyset",{pin:this.pin,type:pinsInUse[this.pin]}));
+        }
+
+        function inputlistener(msg) {
+            if (msg.payload === "true") { msg.payload = true; }
+            if (msg.payload === "false") { msg.payload = false; }
+            var out = Number(msg.payload);
+            if ((out >= 0) && (out <= 1)) {
+                if (RED.settings.verbose) { node.log("out: "+out); }
+                if (node.child !== null) {
+                    node.child.stdin.write(out+"\n");
+                    node.status({fill:"green",shape:"dot",text:msg.payload.toString()});
+                } else {
+                    node.error(RED._("rr-gpio.errors.pythoncommandnotfound"),msg);
+                    node.status({fill:"red",shape:"ring",text:"rr-gpio.status.not-running"});
+                }
+            } else {
+                node.warn(RED._("rr-gpio.errors.invalidinput")+": "+out);
+            }
+        }
+
+        if (node.pin !== undefined) {
+            node.child = spawn(gpioHelper, ["out",node.pin, node.level]);
+            node.status({fill:"green",shape:"dot",text:node.level});
+            node.running = true;
+
+            node.on("input", inputlistener);
+
+            node.child.stdout.on('data', function (data) {
+                if (RED.settings.verbose) { node.log("out: "+data+" :"); }
+            });
+
+            node.child.stderr.on('data', function (data) {
+                if (RED.settings.verbose) { node.log("err: "+data+" :"); }
+            });
+
+            node.child.on('close', function (code) {
+                node.child = null;
+                node.running = false;
+                if (RED.settings.verbose) { node.log(RED._("rr-gpio.status.closed")); }
+                if (node.done) {
+                    node.status({fill:"grey",shape:"ring",text:"rr-gpio.status.closed"});
+                    node.done();
+                } else {
+                    node.status({fill:"red",shape:"ring",text:"rr-gpio.status.stopped"});
+                }
+            });
+
+            node.child.on('error', function (err) {
+                if (err.errno === "ENOENT") {
+                    node.error(RED._("rr-gpio.errors.commandnotfound"));
+                } else if (err.errno === "EACCES") {
+                    node.error(RED._("rr-gpio.errors.commandnotexecutable"));
+                } else {
+                    node.error(RED._("rr-gpio.errors.error",{error:err.errno}))
+                }
+            });
+
+        } else {
+            node.warn(RED._("rr-gpio.errors.invalidpin")+": "+node.pin);
+        }
+
+        node.on("close", function(done) {
+            node.status({fill:"grey",shape:"ring",text:"rr-gpio.status.closed"});
+            delete pinsInUse[node.pin];
+            if (node.child != null) {
+                node.done = done;
+                node.child.stdin.write("close "+node.pin);
+                node.child.kill('SIGKILL');
+            }
+            else { done(); }
         });
+
     }
     RED.nodes.registerType("rr-gpio out",GPIOOutNode);
 
