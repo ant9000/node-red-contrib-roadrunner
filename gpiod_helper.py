@@ -22,6 +22,7 @@ class GPIO:
 
         running = True
         pin_state = pin_line.get_value()
+        print(pin_state)
 
         def wait_for_edge(line):
             nonlocal running, pin_state
