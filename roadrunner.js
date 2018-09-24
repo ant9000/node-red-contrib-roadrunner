@@ -18,20 +18,20 @@ module.exports = function(RED) {
         var node = this;
 
         if (!initOK) {
-            node.status({fill:"grey",shape:"dot",text:"node-red:rr-gpio.status.not-available"});
+            node.status({fill:"grey",shape:"dot",text:"node-red:rpi-gpio.status.not-available"});
             return;
         }
 
         if (!pinsInUse.hasOwnProperty(this.pin)) {
             pinsInUse[this.pin] = 'in';
         } else if (pinsInUse[this.pin] !== 'in') {
-            node.warn(RED._("rr-gpio.errors.alreadyset",{pin:this.pin,type:pinsInUse[this.pin]}));
+            node.warn(RED._("node-red:rpi-gpio.errors.alreadyset",{pin:this.pin,type:pinsInUse[this.pin]}));
         }
 
         if (node.pin !== undefined) {
             node.child = spawn(gpioHelper, ["in",node.pin]);
             node.running = true;
-            node.status({fill:"green",shape:"dot",text:"common.status.ok"});
+            node.status({fill:"green",shape:"dot",text:"node-red:common.status.ok"});
 
             node.child.stdout.on('data', function (data) {
                 var d = data.toString().trim().split("\n");
@@ -53,31 +53,31 @@ module.exports = function(RED) {
             node.child.on('close', function (code) {
                 node.running = false;
                 node.child = null;
-                if (RED.settings.verbose) { node.log(RED._("rr-gpio.status.closed")); }
+                if (RED.settings.verbose) { node.log(RED._("node-red:rpi-gpio.status.closed")); }
                 if (node.done) {
-                    node.status({fill:"grey",shape:"ring",text:"rr-gpio.status.closed"});
+                    node.status({fill:"grey",shape:"ring",text:"node-red:rpi-gpio.status.closed"});
                     node.done();
                 } else {
-                    node.status({fill:"red",shape:"ring",text:"rr-gpio.status.stopped"});
+                    node.status({fill:"red",shape:"ring",text:"node-red:rpi-gpio.status.stopped"});
                 }
             });
 
             node.child.on('error', function (err) {
                 if (err.errno === "ENOENT") {
-                    node.error(RED._("rr-gpio.errors.commandnotfound"));
+                    node.error(RED._("node-red:rpi-gpio.errors.commandnotfound"));
                 } else if (err.errno === "EACCES") {
-                    node.error(RED._("rr-gpio.errors.commandnotexecutable"));
+                    node.error(RED._("node-red:rpi-gpio.errors.commandnotexecutable"));
                 } else {
-                    node.error(RED._("rr-gpio.errors.error",{error:err.errno}))
+                    node.error(RED._("node-red:rpi-gpio.errors.error",{error:err.errno}))
                 }
             });
 
         } else {
-            node.warn(RED._("rr-gpio.errors.invalidpin")+": "+node.pin);
+            node.warn(RED._("node-red:rpi-gpio.errors.invalidpin")+": "+node.pin);
         }
 
         node.on("close", function(done) {
-            node.status({fill:"grey",shape:"ring",text:"rr-gpio.status.closed"});
+            node.status({fill:"grey",shape:"ring",text:"node-red:rpi-gpio.status.closed"});
             delete pinsInUse[node.pin];
             if (node.child != null) {
                 node.done = done;
@@ -96,14 +96,14 @@ module.exports = function(RED) {
         var node = this;
 
         if (!initOK) {
-            node.status({fill:"grey",shape:"dot",text:"node-red:rr-gpio.status.not-available"});
+            node.status({fill:"grey",shape:"dot",text:"node-red:rpi-gpio.status.not-available"});
             return;
         }
 
         if (!pinsInUse.hasOwnProperty(this.pin)) {
             pinsInUse[this.pin] = 'out';
         } else if (pinsInUse[this.pin] !== 'out') {
-            node.warn(RED._("rr-gpio.errors.alreadyset",{pin:this.pin,type:pinsInUse[this.pin]}));
+            node.warn(RED._("node-red:rpi-gpio.errors.alreadyset",{pin:this.pin,type:pinsInUse[this.pin]}));
         }
 
         function inputlistener(msg) {
@@ -116,11 +116,11 @@ module.exports = function(RED) {
                     node.child.stdin.write(out+"\n");
                     node.status({fill:"green",shape:"dot",text:msg.payload.toString()});
                 } else {
-                    node.error(RED._("rr-gpio.errors.pythoncommandnotfound"),msg);
-                    node.status({fill:"red",shape:"ring",text:"rr-gpio.status.not-running"});
+                    node.error(RED._("node-red:rpi-gpio.errors.pythoncommandnotfound"),msg);
+                    node.status({fill:"red",shape:"ring",text:"node-red:rpi-gpio.status.not-running"});
                 }
             } else {
-                node.warn(RED._("rr-gpio.errors.invalidinput")+": "+out);
+                node.warn(RED._("node-red:rpi-gpio.errors.invalidinput")+": "+out);
             }
         }
 
@@ -142,31 +142,31 @@ module.exports = function(RED) {
             node.child.on('close', function (code) {
                 node.child = null;
                 node.running = false;
-                if (RED.settings.verbose) { node.log(RED._("rr-gpio.status.closed")); }
+                if (RED.settings.verbose) { node.log(RED._("node-red:rpi-gpio.status.closed")); }
                 if (node.done) {
-                    node.status({fill:"grey",shape:"ring",text:"rr-gpio.status.closed"});
+                    node.status({fill:"grey",shape:"ring",text:"node-red:rpi-gpio.status.closed"});
                     node.done();
                 } else {
-                    node.status({fill:"red",shape:"ring",text:"rr-gpio.status.stopped"});
+                    node.status({fill:"red",shape:"ring",text:"node-red:rpi-gpio.status.stopped"});
                 }
             });
 
             node.child.on('error', function (err) {
                 if (err.errno === "ENOENT") {
-                    node.error(RED._("rr-gpio.errors.commandnotfound"));
+                    node.error(RED._("node-red:rpi-gpio.errors.commandnotfound"));
                 } else if (err.errno === "EACCES") {
-                    node.error(RED._("rr-gpio.errors.commandnotexecutable"));
+                    node.error(RED._("node-red:rpi-gpio.errors.commandnotexecutable"));
                 } else {
-                    node.error(RED._("rr-gpio.errors.error",{error:err.errno}))
+                    node.error(RED._("node-red:rpi-gpio.errors.error",{error:err.errno}))
                 }
             });
 
         } else {
-            node.warn(RED._("rr-gpio.errors.invalidpin")+": "+node.pin);
+            node.warn(RED._("node-red:rpi-gpio.errors.invalidpin")+": "+node.pin);
         }
 
         node.on("close", function(done) {
-            node.status({fill:"grey",shape:"ring",text:"rr-gpio.status.closed"});
+            node.status({fill:"grey",shape:"ring",text:"node-red:rpi-gpio.status.closed"});
             delete pinsInUse[node.pin];
             if (node.child != null) {
                 node.done = done;
