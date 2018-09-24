@@ -1,12 +1,58 @@
+<style>
+.rr-pin-select select {
+    width: 50px;
+}
+</style>
 <script type="text/x-red" data-template-name="rr-gpio in">
-    <div class="form-row">
+    <div class="form-row rr-pin-select" id="pinform">
         <label for="node-input-pin"><i class="fa fa-circle"></i> Pin</label>
-        <input type="text" id="node-input-pin">
+        <input type="hidden" id="node-input-pin">
+        <select id="node-input-port">
+            <option value="0">PA</option>
+            <option value="1">PB</option>
+            <option value="2">PC</option>
+            <option value="3">PD</option>
+        </select>
+        <select id="node-input-port-pin">
+            <option value="1" >01</option>
+            <option value="2" >02</option>
+            <option value="3" >03</option>
+            <option value="4" >04</option>
+            <option value="5" >05</option>
+            <option value="6" >06</option>
+            <option value="7" >07</option>
+            <option value="8" >08</option>
+            <option value="9" >09</option>
+            <option value="10">10</option>
+            <option value="11">11</option>
+            <option value="12">12</option>
+            <option value="13">13</option>
+            <option value="14">14</option>
+            <option value="15">15</option>
+            <option value="16">16</option>
+            <option value="17">17</option>
+            <option value="18">18</option>
+            <option value="19">19</option>
+            <option value="20">20</option>
+            <option value="21">21</option>
+            <option value="22">22</option>
+            <option value="23">23</option>
+            <option value="24">24</option>
+            <option value="25">25</option>
+            <option value="26">26</option>
+            <option value="27">27</option>
+            <option value="28">28</option>
+            <option value="29">29</option>
+            <option value="30">30</option>
+            <option value="31">31</option>
+            <option value="32">32</option>
+        </select>
     </div>
     <div class="form-row">
-        <label for="node-input-name"><i class="icon-tag"></i> Name</label>
+        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
         <input type="text" id="node-input-name" placeholder="Name">
     </div>
+    <div class="form-tips" id="pin-tip"><span>Pins in use:</span></div>
 </script>
 
 <script type="text/x-red" data-help-name="rr-gpio in">
@@ -20,6 +66,11 @@
 </script>
 
 <script type="text/javascript">
+    var pinsInUse = {};
+    function pinName(pin){
+       var q = Math.floor(pin / 32), r = pin % 32;
+       return 'P' + 'ABCD'.charAt(q) + (r>9?'':'0') + r;
+    }
     RED.nodes.registerType('rr-gpio in',{
         category: 'RoadRunner',
         color: '#a6bbcf',
@@ -31,15 +82,86 @@
         outputs:1,
         icon: "roadrunner.png",
         label: function() {
-            return this.name||"rr-gpio in "+this.pin;
+            return this.name||"rr-gpio in "+pinName(this.pin);
+        },
+        info: function() {
+            if ( Object.keys(pinsInUse).length !== 0 ) {
+                return "**Pins in use** : "+Object.keys(pinsInUse).map(pinName);
+            }
+            else { return ""; }
+        },
+        labelStyle: function() {
+            return this.name?"node_label_italic":"";
+        },
+        outputLabels: function() { return "GPIO"+this.pin; },
+        oneditprepare: function() {
+            $.getJSON('rr-pins/'+this.id,function(data) {
+                pinsInUse = data || {};
+                $('#pin-tip').html("Pins in use: " + Object.keys(data).map(pinName));
+            });
+            if ($("#node-input-pin").val()) {
+                var pin = parseInt($("#node-input-pin").val());
+                $("#node-input-port").val(Math.floor(pin / 32));
+                $("#node-input-port-pin").val(pin % 32);
+            }
+            $('#pinform select').on('change', function() {
+                var pinnew = parseInt($("#node-input-port").val()) * 32 + parseInt($("#node-input-port-pin").val());
+                if ((pinnew) && (pinnew !== this.pin)) {
+                    if (pinsInUse.hasOwnProperty(pinnew)) {
+                        RED.notify("Pin "+pinName(pinnew)+" already in use","warn");
+                    }
+                    tnis.pin = pinnew;
+                }
+                $("#node-input-pin").val(this.pin);
+            });
         }
     });
 </script>
 
 <script type="text/x-red" data-template-name="rr-gpio out">
-    <div class="form-row">
+    <div class="form-row rr-pin-select" id="pinform">
         <label for="node-input-pin"><i class="fa fa-circle"></i> Pin</label>
-        <input type="text" id="node-input-pin">
+        <input type="hidden" id="node-input-pin">
+        <select id="node-input-port">
+            <option value="0">PA</option>
+            <option value="1">PB</option>
+            <option value="2">PC</option>
+            <option value="3">PD</option>
+        </select>
+        <select id="node-input-port-pin">
+            <option value="1" >01</option>
+            <option value="2" >02</option>
+            <option value="3" >03</option>
+            <option value="4" >04</option>
+            <option value="5" >05</option>
+            <option value="6" >06</option>
+            <option value="7" >07</option>
+            <option value="8" >08</option>
+            <option value="9" >09</option>
+            <option value="10">10</option>
+            <option value="11">11</option>
+            <option value="12">12</option>
+            <option value="13">13</option>
+            <option value="14">14</option>
+            <option value="15">15</option>
+            <option value="16">16</option>
+            <option value="17">17</option>
+            <option value="18">18</option>
+            <option value="19">19</option>
+            <option value="20">20</option>
+            <option value="21">21</option>
+            <option value="22">22</option>
+            <option value="23">23</option>
+            <option value="24">24</option>
+            <option value="25">25</option>
+            <option value="26">26</option>
+            <option value="27">27</option>
+            <option value="28">28</option>
+            <option value="29">29</option>
+            <option value="30">30</option>
+            <option value="31">31</option>
+            <option value="32">32</option>
+        </select>
     </div>
     <div class="form-row">
         <label for="node-input-level">Initial level</label>
@@ -49,13 +171,14 @@
         </select>
     </div>
     <div class="form-row">
-        <label for="node-input-name"><i class="icon-tag"></i> Name</label>
+        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
         <input type="text" id="node-input-name" placeholder="Name">
     </div>
+    <div class="form-tips" id="pin-tip"><span>Pins in use:</span></div>
 </script>
 
 <script type="text/x-red" data-help-name="rr-gpio out">
-    <p>RoadRunner output node. Can be used in Digital or PWM modes.
+    <p>RoadRunner output node.
     <h3>Inputs</h3>
     <dl class="message-properties">
         <dt>payload <span class="property-type">number | string | boolean</span></dt>
@@ -63,6 +186,11 @@
 </script>
 
 <script type="text/javascript">
+    var pinsInUse = {};
+    function pinName(pin){
+       var q = Math.floor(pin / 32), r = pin % 32;
+       return 'P' + 'ABCD'.charAt(q) + (r>9?'':'0') + r;
+    }
     RED.nodes.registerType('rr-gpio out',{
         category: 'RoadRunner',
         color: '#a6bbcf',
@@ -76,7 +204,38 @@
         icon: "roadrunner.png",
         align: "right",
         label: function() {
-            return this.name||"rr-gpio out "+this.pin;
+            return this.name||"rr-gpio out "+pinName(this.pin);
+        },
+        info: function() {
+            if ( Object.keys(pinsInUse).length !== 0 ) {
+                return "**Pins in use** : "+Object.keys(pinsInUse).map(pinName);
+            }
+            else { return ""; }
+        },
+        labelStyle: function() {
+            return this.name?"node_label_italic":"";
+        },
+        inputLabels: function() { return "GPIO"+this.pin; },
+        oneditprepare: function() {
+            $.getJSON('rr-pins/'+this.id,function(data) {
+                pinsInUse = data || {};
+                $('#pin-tip').html("Pins in use: " + Object.keys(data).map(pinName));
+            });
+            if ($("#node-input-pin").val()) {
+                var pin = parseInt($("#node-input-pin").val());
+                $("#node-input-port").val(Math.floor(pin / 32));
+                $("#node-input-port-pin").val(pin % 32);
+            }
+            $('#pinform select').on('change', function() {
+                var pinnew = parseInt($("#node-input-port").val()) * 32 + parseInt($("#node-input-port-pin").val());
+                if ((pinnew) && (pinnew !== this.pin)) {
+                    if (pinsInUse.hasOwnProperty(pinnew)) {
+                        RED.notify("Pin "+pinName(pinnew)+" already in use","warn");
+                    }
+                    tnis.pin = pinnew;
+                }
+                $("#node-input-pin").val(this.pin);
+            });
         }
     });
 </script>

@@ -179,6 +179,10 @@ module.exports = function(RED) {
     }
     RED.nodes.registerType("rr-gpio out",GPIOOutNode);
 
+    RED.httpAdmin.get('/rr-pins/:id', RED.auth.needsPermission('rr-gpio.read'), function(req,res) {
+        res.json(pinsInUse);
+    });
+
     RED.log.info("rr-gpio : initialization complete.");
 }
 
