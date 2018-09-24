@@ -84,7 +84,7 @@ if __name__ == "__main__":
     {me} in pin
        monitor pin line, print value on changes
 
-    {me} out [initial value]
+    {me} out pin [initial value]
        set line as output; accepts values from stdin (one per line)
 
     To end the helper: type q, enter

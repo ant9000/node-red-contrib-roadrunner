@@ -110,7 +110,7 @@
                     if (pinsInUse.hasOwnProperty(pinnew)) {
                         RED.notify("Pin "+pinName(pinnew)+" already in use","warn");
                     }
-                    tnis.pin = pinnew;
+                    this.pin = pinnew;
                 }
                 $("#node-input-pin").val(this.pin);
             });
@@ -232,7 +232,7 @@
                     if (pinsInUse.hasOwnProperty(pinnew)) {
                         RED.notify("Pin "+pinName(pinnew)+" already in use","warn");
                     }
-                    tnis.pin = pinnew;
+                    this.pin = pinnew;
                 }
                 $("#node-input-pin").val(this.pin);
             });
