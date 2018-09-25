@@ -111,7 +111,7 @@ module.exports = function(RED) {
     function GPIOOutNode(config) {
         RED.nodes.createNode(this,config);
         this.pin = config.pin;
-        this.level = config.level ? 1 : 0;
+        this.level = config.level;
         var node = this;
 
         if (!initOK) {
