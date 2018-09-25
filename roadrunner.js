@@ -1,13 +1,31 @@
 module.exports = function(RED) {
     "use strict";
     RED.log.info("rr-gpio : initializing.");
-    var exec = require('child_process').exec;
+    var exec = require('child_process').execSync;
     var spawn = require('child_process').spawn;
     var fs = require('fs');
     var gpioHelper = __dirname+'/gpiod_helper.py';
     process.env.PYTHONUNBUFFERED = 1;
 
     var initOK = true;
+    try {
+        var cpuinfo = fs.readFileSync("/proc/cpuinfo").toString();
+        if (cpuinfo.indexOf(": Atmel SAMA5") === -1) {
+            initOK = false;
+            RED.log.warn("rr-gpio : "+RED._("RoadRunner CPU not detected"));
+        } else {
+            try {
+                exec(gpioHelper);
+            } catch(err) {
+                if (err.status == 42) {
+                    initOK = false;
+                    RED.log.warn("rr-gpio : "+RED._("Python3 bindings for libgpiod not found"));
+                }
+            }
+        }
+    } catch(err) {
+        initOK = false;
+    }
 
     var pinsInUse = {};
 
@@ -183,6 +201,10 @@ module.exports = function(RED) {
         res.json(pinsInUse);
     });
 
-    RED.log.info("rr-gpio : initialization complete.");
+    if (initOK) {
+        RED.log.info("rr-gpio : initialization complete.");
+    } else {
+        RED.log.warn("rr-gpio : "+RED._("RoadRunner specific node set inactive"));
+    }
 }
 

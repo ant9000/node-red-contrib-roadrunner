@@ -2,7 +2,12 @@
 
 import sys, time, threading
 sys.path.append("/usr/local/lib/python3.5/site-packages/")
-import gpiod
+
+try:
+    import gpiod
+except Exception as e:
+    print("ERROR: {}".format(e))
+    sys.exit(42)
 
 class GPIO:
     def __init__(self):
