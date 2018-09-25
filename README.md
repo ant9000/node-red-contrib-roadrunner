@@ -6,5 +6,5 @@ INSTALLATION
 
 ```
 cd ~/.node-red/
-npm install https://github.com/ant9000/node-red-contrib-roadrunner
+npm install node-red-contrib-roadrunner
 ```
