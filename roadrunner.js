@@ -25,6 +25,7 @@ module.exports = function(RED) {
         }
     } catch(err) {
         initOK = false;
+        RED.log.warn("rr-gpio : "+RED._("RoadRunner detection failed"));
     }
 
     var pinsInUse = {};
