@@ -8,12 +8,14 @@
         <label for="node-input-pin"><i class="fa fa-circle"></i> Pin</label>
         <input type="hidden" id="node-input-pin">
         <select id="node-input-port">
+            <option value=""></option>
             <option value="0">PA</option>
             <option value="1">PB</option>
             <option value="2">PC</option>
             <option value="3">PD</option>
         </select>
         <select id="node-input-port-pin">
+            <option value=""></option>
             <option value="0" >00</option>
             <option value="1" >01</option>
             <option value="2" >02</option>
@@ -70,15 +72,17 @@
 <script type="text/javascript">
     var pinsInUse = {};
     function pinName(pin){
+       if(pin===""){ return ""; }
        var q = Math.floor(pin / 32), r = pin % 32;
        return 'P' + 'ABCD'.charAt(q) + (r>9?'':'0') + r;
     }
+    function validPin(v) { return RED.validators.number(v) && (v >= 0) && (v < 128); }
     RED.nodes.registerType('rr-gpio in',{
         category: 'RoadRunner',
         color: '#a6bbcf',
         defaults: {
             name: {value:""},
-            pin: { value:"0", required:true, validate:RED.validators.number() }
+            pin: { value:"", required:true, validate:validPin }
         },
         inputs:0,
         outputs:1,
@@ -101,14 +105,14 @@
                 pinsInUse = data || {};
                 $('#pin-tip').html("Pins in use: " + Object.keys(data).map(pinName));
             });
-            if ($("#node-input-pin").val()) {
+            if ($("#node-input-pin").val() !== "") {
                 var pin = parseInt($("#node-input-pin").val());
                 $("#node-input-port").val(Math.floor(pin / 32));
                 $("#node-input-port-pin").val(pin % 32);
             }
             $('#pinform select').on('change', function() {
                 var pinnew = parseInt($("#node-input-port").val()) * 32 + parseInt($("#node-input-port-pin").val());
-                if ((pinnew) && (pinnew !== this.pin)) {
+                if (validPin(pinnew) && (pinnew !== this.pin)) {
                     if (pinsInUse.hasOwnProperty(pinnew)) {
                         RED.notify("Pin "+pinName(pinnew)+" already in use","warn");
                     }
@@ -125,12 +129,14 @@
         <label for="node-input-pin"><i class="fa fa-circle"></i> Pin</label>
         <input type="hidden" id="node-input-pin">
         <select id="node-input-port">
+            <option value=""></option>
             <option value="0">PA</option>
             <option value="1">PB</option>
             <option value="2">PC</option>
             <option value="3">PD</option>
         </select>
         <select id="node-input-port-pin">
+            <option value=""></option>
             <option value="0" >00</option>
             <option value="1" >01</option>
             <option value="2" >02</option>
@@ -192,15 +198,17 @@
 <script type="text/javascript">
     var pinsInUse = {};
     function pinName(pin){
+       if(pin===""){ return ""; }
        var q = Math.floor(pin / 32), r = pin % 32;
        return 'P' + 'ABCD'.charAt(q) + (r>9?'':'0') + r;
     }
+    function validPin(v) { return RED.validators.number(v) && (v >= 0) && (v < 128); }
     RED.nodes.registerType('rr-gpio out',{
         category: 'RoadRunner',
         color: '#a6bbcf',
         defaults: {
             name: {value:""},
-            pin: { value:"0", required:true, validate:RED.validators.number() },
+            pin: { value:"", required:true, validate:validPin },
             level: { value:"0" }
         },
         inputs:1,
@@ -232,7 +240,7 @@
             }
             $('#pinform select').on('change', function() {
                 var pinnew = parseInt($("#node-input-port").val()) * 32 + parseInt($("#node-input-port-pin").val());
-                if ((pinnew) && (pinnew !== this.pin)) {
+                if (validPin(pinnew) && (pinnew !== this.pin)) {
                     if (pinsInUse.hasOwnProperty(pinnew)) {
                         RED.notify("Pin "+pinName(pinnew)+" already in use","warn");
                     }
