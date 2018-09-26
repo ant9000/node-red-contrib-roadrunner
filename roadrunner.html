@@ -14,6 +14,7 @@
             <option value="3">PD</option>
         </select>
         <select id="node-input-port-pin">
+            <option value="0" >00</option>
             <option value="1" >01</option>
             <option value="2" >02</option>
             <option value="3" >03</option>
@@ -45,7 +46,6 @@
             <option value="29">29</option>
             <option value="30">30</option>
             <option value="31">31</option>
-            <option value="32">32</option>
         </select>
     </div>
     <div class="form-row">
@@ -76,7 +76,7 @@
         color: '#a6bbcf',
         defaults: {
             name: {value:""},
-            pin: { value:"1", required:true, validate:RED.validators.number() }
+            pin: { value:"0", required:true, validate:RED.validators.number() }
         },
         inputs:0,
         outputs:1,
@@ -129,6 +129,7 @@
             <option value="3">PD</option>
         </select>
         <select id="node-input-port-pin">
+            <option value="0" >00</option>
             <option value="1" >01</option>
             <option value="2" >02</option>
             <option value="3" >03</option>
@@ -160,7 +161,6 @@
             <option value="29">29</option>
             <option value="30">30</option>
             <option value="31">31</option>
-            <option value="32">32</option>
         </select>
     </div>
     <div class="form-row">
@@ -196,7 +196,7 @@
         color: '#a6bbcf',
         defaults: {
             name: {value:""},
-            pin: { value:"1", required:true, validate:RED.validators.number() },
+            pin: { value:"0", required:true, validate:RED.validators.number() },
             level: { value:"0" }
         },
         inputs:1,
