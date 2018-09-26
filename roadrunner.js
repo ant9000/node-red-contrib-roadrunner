@@ -20,9 +20,7 @@ module.exports = function(RED) {
                 fs.accessSync('/dev/gpiochip0', fs.constants.R_OK | fs.constants.W_OK)
             } catch(err) {
                 initOK = false;
-                var err = "rr-gpio : "+RED._("/dev/gpiochip0 is not writable by user "+process.env.USER+" - see README for a fix");
-                RED.log.warn(err);
-                RED.notify(err, "warn");
+                RED.log.warn("rr-gpio : "+RED._("/dev/gpiochip0 is not writable by user "+process.env.USER+" - see README for a fix"));
             }
             if (initOK) {
                 try {
