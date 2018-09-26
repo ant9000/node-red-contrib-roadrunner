@@ -17,11 +17,19 @@ module.exports = function(RED) {
             RED.log.warn("rr-gpio : "+RED._("RoadRunner CPU not detected"));
         } else {
             try {
-                exec(gpioHelper);
+                fs.accessSync('/dev/gpiochip0', fs.constants.R_OK | fs.constants.W_OK)
             } catch(err) {
-                if (err.status == 42) {
-                    initOK = false;
-                    RED.log.warn("rr-gpio : "+RED._("Python3 bindings for libgpiod not found"));
+                initOK = false;
+                RED.log.warn("rr-gpio : "+RED._("/dev/gpiochip0 is not writable by user "+process.env.USER+" - see README for a fix"));
+            }
+            if (initOK) {
+                try {
+                    exec(gpioHelper);
+                } catch(err) {
+                    if (err.status == 42) {
+                        initOK = false;
+                        RED.log.warn("rr-gpio : "+RED._("Python3 bindings for libgpiod not found"));
+                    }
                 }
             }
         }
