@@ -16,7 +16,7 @@
   "license": "GPL-3.0-or-later",
   "dependencies": {},
   "scripts": {
-    "postinstall": "grep 'Atmel SAMA5' /proc/cpuinfo && dpkg -i prebuilt/libgpiod_1.1.1-1_armhf.deb"
+    "postinstall": "grep 'Atmel SAMA5' /proc/cpuinfo && sudo dpkg -i prebuilt/libgpiod_1.1.1-1_armhf.deb"
   },
   "node-red": {
     "nodes": {
