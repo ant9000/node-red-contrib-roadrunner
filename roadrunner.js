@@ -5,6 +5,8 @@ module.exports = function(RED) {
     var spawn = require('child_process').spawn;
     var fs = require('fs');
     var gpioHelper = __dirname+'/gpiod_helper.py';
+    process.env.LD_LIBRARY_PATH = __dirname+'/lib/';
+    process.env.PYTHONPATH = __dirname+'/lib/python/';
     process.env.PYTHONUNBUFFERED = 1;
 
     var initOK = true;
