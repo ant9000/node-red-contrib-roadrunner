@@ -5,6 +5,7 @@ Node-RED nodes to control Acmesystem's Roadrunner GPIO.
 INSTALLATION
 
 ```
+sudo apt install python3-libgpiod
 cd ~/.node-red/
 npm install node-red-contrib-roadrunner
 ```

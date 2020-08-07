@@ -1,7 +1,6 @@
 #! /usr/bin/python3
 
 import sys, time, threading
-sys.path.append("/usr/local/lib/python3.5/site-packages/")
 
 try:
     import gpiod
