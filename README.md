@@ -2,6 +2,8 @@ DESCRIPTION
 
 Node-RED nodes to control Acmesystem's Roadrunner GPIO.
 
+Further info here: https://www.acmesystems.it/roadrunner_nodered#gpio
+
 INSTALLATION
 
 ```
